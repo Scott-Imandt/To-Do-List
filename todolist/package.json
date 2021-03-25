@@ -1,0 +1,22 @@
+{
+  "name": "todolist",
+  "version": "1.0.0",
+  "description": "List of things to do(hosted on local server and DB)",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Scott-Imandt/To-Do-List.git"
+  },
+  "author": "Scott Imandt",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Scott-Imandt/To-Do-List/issues"
+  },
+  "homepage": "https://github.com/Scott-Imandt/To-Do-List#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
