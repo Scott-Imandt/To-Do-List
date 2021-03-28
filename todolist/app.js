@@ -46,6 +46,15 @@ const List = mongoose.model("List",listSchema);
 
 app.get("/", function(req, res) {
 
+  const dbList = [];
+
+  List.find({},function(err,foundList){
+    foundList.forEach(function(list){
+      dbList.push(list.name);
+      //console.log(dbList);
+    });
+  });
+
   Item.find({}, function(err, foundItems){
     if (foundItems.length === 0){
       Item.insertMany(defaultItems, function(err){
@@ -57,10 +66,12 @@ app.get("/", function(req, res) {
       });
       res.redirect("/");
     } else{
-      //const day = date.getDate();
-      res.render("list", {listTitle: "Today", newListItems:foundItems});
+      const day = date.getDate();
+      //console.log(dbList);
+      res.render("list", {listTitle: "Today", newListItems:foundItems, currentDay:day, dbNavList:dbList});
     }
   });
+
 });
 
 app.post("/", function(req,res){
@@ -84,9 +95,38 @@ app.post("/", function(req,res){
   }
 });
 
+app.post("/create", function(req,res){
+  const newList = req.body.newList;
+
+  res.redirect("/" + newList);
+
+});
+
+app.post("/deleteList", function(req,res){
+  const deleteList = req.body.listdeletebtn;
+  List.findOneAndDelete({name:deleteList},function(err){
+    if(err){
+      console.log(err);
+    }
+    else{
+      console.log(deleteList+" was removed from the DB");
+    }
+  });
+
+  res.redirect("/");
+
+});
+
 app.get("/:customListName", function(req, res){
   const customListName = _.capitalize(req.params.customListName);
+  const dbList = [];
 
+  List.find({},function(err,foundList){
+    foundList.forEach(function(list){
+      dbList.push(list.name);
+
+    });
+  });
   List.findOne({name:customListName},function(err, foundList){
     if(err){
       console.log(err);
@@ -98,12 +138,14 @@ app.get("/:customListName", function(req, res){
         items: defaultItems
       });
 
-      list.save();
+      list.save(() => res.redirect('/' + customListName));
 
-      res.redirect("/" + customListName);
     }else{
       // show existing list
-      res.render("list", {listTitle: foundList.name, newListItems:foundList.items});
+
+      const day = date.getDate();
+      //console.log(dbList);
+      res.render("list", {listTitle: foundList.name, newListItems:foundList.items, currentDay:day, dbNavList:dbList});
     }
   });
 });
