@@ -1,9 +1,11 @@
 // jshint esversion:6
 
+// Info In Readme about g-i-s / getImageurl
+
 const express = require("express");
 const bodyParser = require("body-parser");
 const date = require(__dirname + "/date.js");
-//const getImageurl = require(__dirname + "/g-i-s.js");
+const getImageurl = require(__dirname + "/g-i-s.js");
 const mongoose = require("mongoose");
 const _ = require("lodash");
 
@@ -26,21 +28,30 @@ const itemsSchema = {
 const Item = mongoose.model("Item", itemsSchema);
 
 const Item1 = new Item({
-  name: "Milk",
+  name: "Add a new List with the Edit tab",
   //imangeurl: getImageurl.getImageurl("Milk")
 });
 
 const Item2 = new Item({
-  name: "Eggs",
+  name: "Click the list you want in the nav",
+  //imangeurl: getImageurl.getImageurl("Eggs")
+});
+const Item3 = new Item({
+  name: "Add/Remove a item",
   //imangeurl: getImageurl.getImageurl("Eggs")
 });
 
-const Item3 = new Item({
-  name: "Pepper",
+const Item4 = new Item({
+  name: "Delete list in the Edit tab",
   //imangeurl: getImageurl.getImageurl("Pepper")
 });
 
-const defaultItems = [Item1, Item2, Item3];
+const Item5 = new Item({
+  name: "Empty list will reinstate default list",
+  //imangeurl: getImageurl.getImageurl("Pepper")
+});
+
+const defaultItems = [Item1, Item2, Item3, Item4, Item5];
 
 
 const listSchema = {
@@ -63,21 +74,20 @@ app.get("/", function(req, res) {
 
   Item.find({}, function(err, foundItems){
     if (foundItems.length === 0){
-      Item.insertMany(defaultItems, function(err){
-        if(err){
-          console.log(err);
-        }else{
-          console.log("Successfully added default items to the database");
-        }
-      });
-      res.redirect("/");
-    } else{
+     Item.insertMany(defaultItems, function(err){
+       if(err){
+         console.log(err);
+       }else{
+         console.log("Successfully added default items to the database");
+       }
+     });
+     res.redirect("/");
+   } else{
       const day = date.getDate();
       //console.log(dbList);
 
-
       res.render("list", {listTitle: "Today", newListItems:foundItems, currentDay:day, dbNavList:dbList});
-    }
+   }
   });
 
 });
@@ -86,20 +96,6 @@ app.post("/", function(req,res){
 
   const itemName = req.body.newItem;
   const listName = req.body.list;
-
-  // var url;
-
-  // async function saveUrlPromise(){
-  //   return new Promise((resolve,reject)=>{
-  //    var temp = getImageurl.getImageurl(itemName);
-  //     console.log(temp + "in save url function");
-  //     resolve(temp);
-  //   })
-  // }
-
-  // async function saveUrl(){
-  //     saveUrlPromise().then((message)=>{
-  //     ;
 
       const item = new Item({
       name: itemName,
@@ -119,16 +115,6 @@ app.post("/", function(req,res){
         res.redirect("/" + listName);
       });
     }
-    //   return message;
-    // }).catch((error)=>{
-    //   console.log(error);
-    // })
-  //}
-
-
-  // url = saveUrl();
-
-
 
 });
 
@@ -181,6 +167,17 @@ app.get("/:customListName", function(req, res){
     }else{
       // show existing list
 
+//
+//  This is where the gis image gets called you can uncomment this plus the require above
+//  to see the result. This will log in the console when you refresh/load a custom list
+//
+      // async function run(){
+      //   const temp = await getImageurl("cat");
+      //   console.log(temp);
+      //   return temp;
+      // }
+      // console.log(run());;
+
       const day = date.getDate();
       //console.log(dbList);
       res.render("list", {listTitle: foundList.name, newListItems:foundList.items, currentDay:day, dbNavList:dbList});
@@ -204,25 +201,12 @@ app.post("/delete", function(req, res){
   } else {
   List.findOneAndUpdate({name: listName}, {$pull:{items: {_id: checkedItemId}}}, function(err, foundList){
     if(!err){
+      console.log(checkedItemId + " Was Removed from the DB");
       res.redirect("/" + listName);
       }
     })
   }
 });
-
-
-
-app.post("/work", function(req,res){
-  const item = req.body.newItem;
-  workItems.push(item);
-  res.redirect("/work");
-});
-
-
-app.get("/about", function(req, res){
-  res.render("about");
-});
-
 
 app.listen(3000, function() {
   console.log("Server is Running on port 3000");
