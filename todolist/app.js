@@ -2,9 +2,11 @@
 
 const express = require("express");
 const bodyParser = require("body-parser");
-const date = require(__dirname + "/date.js")
+const date = require(__dirname + "/date.js");
+//const getImageurl = require(__dirname + "/g-i-s.js");
 const mongoose = require("mongoose");
 const _ = require("lodash");
+
 
 const app = express();
 
@@ -17,21 +19,25 @@ app.use(express.static("public"));
 mongoose.connect("mongodb://localhost:27017/todolistDB",{ useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false});
 
 const itemsSchema = {
-  name: String
+  name: String,
+  //imangeurl: String
 };
 
 const Item = mongoose.model("Item", itemsSchema);
 
 const Item1 = new Item({
-  name: "Welcome to your todolist"
+  name: "Milk",
+  //imangeurl: getImageurl.getImageurl("Milk")
 });
 
 const Item2 = new Item({
-  name: "Hit the + buttom to add a item"
+  name: "Eggs",
+  //imangeurl: getImageurl.getImageurl("Eggs")
 });
 
 const Item3 = new Item({
-  name: "<- hit this to delete an item"
+  name: "Pepper",
+  //imangeurl: getImageurl.getImageurl("Pepper")
 });
 
 const defaultItems = [Item1, Item2, Item3];
@@ -68,6 +74,8 @@ app.get("/", function(req, res) {
     } else{
       const day = date.getDate();
       //console.log(dbList);
+
+
       res.render("list", {listTitle: "Today", newListItems:foundItems, currentDay:day, dbNavList:dbList});
     }
   });
@@ -79,20 +87,49 @@ app.post("/", function(req,res){
   const itemName = req.body.newItem;
   const listName = req.body.list;
 
-  const item = new Item({
-    name: itemName
-  });
+  // var url;
 
-  if(listName === "Today"){
-    item.save();
-    res.redirect("/");
-  }else{
-    List.findOne({name:listName}, function(err,foundList){
-      foundList.items.push(item);
-      foundList.save();
-      res.redirect("/" + listName);
+  // async function saveUrlPromise(){
+  //   return new Promise((resolve,reject)=>{
+  //    var temp = getImageurl.getImageurl(itemName);
+  //     console.log(temp + "in save url function");
+  //     resolve(temp);
+  //   })
+  // }
+
+  // async function saveUrl(){
+  //     saveUrlPromise().then((message)=>{
+  //     ;
+
+      const item = new Item({
+      name: itemName,
+      //imangeurl: message
     });
-  }
+
+    if(listName === "Today"){
+      item.save();
+      res.redirect("/");
+    }else{
+      List.findOne({name:listName}, function(err,foundList){
+        //foundList.items.push(item);
+        let x = foundList.items;
+        x.push(item);
+
+        foundList.save();
+        res.redirect("/" + listName);
+      });
+    }
+    //   return message;
+    // }).catch((error)=>{
+    //   console.log(error);
+    // })
+  //}
+
+
+  // url = saveUrl();
+
+
+
 });
 
 app.post("/create", function(req,res){
@@ -132,10 +169,11 @@ app.get("/:customListName", function(req, res){
       console.log(err);
     }
     if(!foundList){
+      const empty = [];
       // create new list
       const list = new List ({
         name: customListName,
-        items: defaultItems
+        items: empty
       });
 
       list.save(() => res.redirect('/' + customListName));

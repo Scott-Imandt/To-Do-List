@@ -15,44 +15,49 @@
           <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
             <li>
               <form class="dropdown-item" action="/create" method="post">
-              <input id="asd" type="text" name="newList" placeholder="New List " autocomplete="off">
-              <button type="submit">+</button>
-            </form>
-          </li>
-          <div class="dropdown-divider"></div>
-            <li>
-              <form class="dropdown-item" action="/deleteList" method="post">
-                <label type="label">Delete:</label>
-                <input id = "deleteInput" type="submit" name="listdeletebtn" value=<%=listTitle%>></input>
+                <input id="asd" type="text" name="newList" placeholder="New List " autocomplete="off">
+                <button type="submit">+</button>
               </form>
             </li>
             <div class="dropdown-divider"></div>
-            <li><a class="dropdown-item" href="#">Imange Search</a></li>
+            <li>
+              <form class="dropdown-item" action="/deleteList" method="post">
+                <label type="label">Delete:</label>
+                <input id="deleteInput" type="submit" name="listdeletebtn" value="<%=listTitle%>"></input>
+              </form>
+            </li>
+            <div class="dropdown-divider"></div>
+            <li>
+              <div class="form-check form-switch dropdown-item">
+                <label class="form-check-label" for="flexSwitchCheckDefault">g-i-s: unavailable</label>
+                <!-- <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault"> -->
+              </div>
+            </li>
           </ul>
         </li>
         <% dbNavList.forEach(function(item){ %>
-         <li class="nav-item">
-            <a class="nav-link" aria-current="page" href="
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="
             <%=item %>
             ">
-              <%= item %>
-            </a>
-          </li>
+            <%= item %>
+          </a>
+        </li>
         <%  });%>
-
       </ul>
-
     </div>
   </div>
   <li class="navbar-nav navbar-collapse">
-    <a class="nav-link" aria-current="page"><%= currentDay %></a>
+    <a class="nav-link active" aria-current="page"><%= currentDay %></a>
   </li>
-
 </nav>
-
-<div class="">
-
+<div class="container">
+  <div class="row justify-content-center">
+<div class="col-3">
+<h1> </h1>
 </div>
+
+<div class="col-6 justify-content-center ">
 <div class="box" id="heading">
   <h1> <%= listTitle %> </h1>
 </div>
@@ -63,17 +68,22 @@
   <form action="/delete" method="post">
     <div class="item">
       <input type="checkbox" name="checkbox" value="<%=item._id%>" onchange="this.form.submit()">
-      <p> <%= item.name %> </p>
+      <p> <%= item.name %> <%//console.log( item.imangeurl);%></p>
     </div>
-    <input type="hidden" name="listName" value="<%= listTitle %>"></input>
+    <input type="hidden" name="listName" value="<%=listTitle%>"></input>
   </form>
 
   <%  });%>
 
   <form class="item" action="/" method="post">
     <input type="text" name="newItem" placeholder="New Item" autocomplete="off">
-    <button type="submit" name="list" value=<%=listTitle%>>+</button>
+    <button type="submit" name="list" value="<%=listTitle%>">+</button>
   </form>
 </div>
-
+</div>
+<div class="col-3">
+<h1> </h1>
+</div>
+</div>
+</div>
 <%- include("footer") -%>
